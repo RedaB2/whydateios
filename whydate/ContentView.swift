@@ -1,24 +1,17 @@
-//
-//  ContentView.swift
-//  whydate
-//
-//  Created by Reda Boutayeb on 8/15/24.
-//
-
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
+    @Binding var isUserLoggedIn: Bool
+    @Binding var isEmailVerified: Bool
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            if isUserLoggedIn && isEmailVerified {
+                HomeView(isUserLoggedIn: $isUserLoggedIn)
+            } else {
+                WelcomeView(isUserLoggedIn: $isUserLoggedIn)
+            }
         }
-        .padding()
     }
-}
-
-#Preview {
-    ContentView()
 }
