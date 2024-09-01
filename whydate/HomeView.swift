@@ -20,7 +20,7 @@ struct HomeView: View {
                 }
             
             if let uid = uid {
-                ProfileView(uid: uid)
+                ProfileView(viewModel: viewModel, uid: uid)
                     .tabItem {
                         Image(systemName: "person.fill")
                     }

@@ -208,7 +208,7 @@ class UserProfileViewModel: ObservableObject {
 }
 
 struct ProfileView: View {
-    @StateObject private var viewModel = UserProfileViewModel()
+    @ObservedObject var viewModel: UserProfileViewModel
     let uid: String
     
     @State private var selectedImage: UIImage? = nil
@@ -218,6 +218,8 @@ struct ProfileView: View {
     @State private var isEditingHeight = false
     @State private var isEditingMajor = false
     @State private var isEditingHometown = false
+    @State private var showQuestionnaire = false
+    
     
     let majors = ["Undeclared", "Computer Science", "Mechanical Engineering", "Electrical Engineering", "Mathematics", "Physics", "Chemistry", "Biology", "Economics", "Business Administration", "Civil Engineering", "Architecture"]
     
@@ -281,6 +283,18 @@ struct ProfileView: View {
             )
             .padding(.horizontal, 20) // Optional padding for better alignment
             
+            Button(action: {
+                            showQuestionnaire = true
+                        }) {
+                            Text("Questionnaire")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                        }
+                        .padding(.top, 20)
+            
             Spacer() // This pushes the content to the top of the screen
         }
         .onAppear {
@@ -311,6 +325,9 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $isEditingHometown) {
             EditHometownView(hometown: $viewModel.hometown, viewModel: viewModel, uid: uid)
+        }
+        .sheet(isPresented: $showQuestionnaire) {
+            QuestionnaireView(uid: uid)
         }
     }
     

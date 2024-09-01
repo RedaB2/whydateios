@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		150E4E512C83E0D0004E5AC9 /* QuestionnaireView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E4E502C83E0D0004E5AC9 /* QuestionnaireView.swift */; };
+		150E4E532C83F0BA004E5AC9 /* ReauthenticatePromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E4E522C83F0BA004E5AC9 /* ReauthenticatePromptView.swift */; };
 		151CCA612C72E22E003FC518 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CCA602C72E22E003FC518 /* SettingsView.swift */; };
 		151CCA632C72E245003FC518 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CCA622C72E245003FC518 /* MessageView.swift */; };
 		151CCA672C72EE06003FC518 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CCA662C72EE06003FC518 /* ProfileView.swift */; };
@@ -72,6 +74,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		150E4E502C83E0D0004E5AC9 /* QuestionnaireView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionnaireView.swift; sourceTree = "<group>"; };
+		150E4E522C83F0BA004E5AC9 /* ReauthenticatePromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReauthenticatePromptView.swift; sourceTree = "<group>"; };
 		151CCA602C72E22E003FC518 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		151CCA622C72E245003FC518 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		151CCA662C72EE06003FC518 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -192,6 +196,8 @@
 				151CCA602C72E22E003FC518 /* SettingsView.swift */,
 				151CCA622C72E245003FC518 /* MessageView.swift */,
 				151CCA662C72EE06003FC518 /* ProfileView.swift */,
+				150E4E502C83E0D0004E5AC9 /* QuestionnaireView.swift */,
+				150E4E522C83F0BA004E5AC9 /* ReauthenticatePromptView.swift */,
 			);
 			path = whydate;
 			sourceTree = "<group>";
@@ -393,7 +399,9 @@
 				151CCA632C72E245003FC518 /* MessageView.swift in Sources */,
 				15C5A4562C6F02DB0069FFE1 /* EmailVerificationView.swift in Sources */,
 				15C5A41C2C6DD7E40069FFE1 /* LoginView.swift in Sources */,
+				150E4E532C83F0BA004E5AC9 /* ReauthenticatePromptView.swift in Sources */,
 				15F222EA2C7139820075F3C8 /* ImagePicker.swift in Sources */,
+				150E4E512C83E0D0004E5AC9 /* QuestionnaireView.swift in Sources */,
 				15C5A4542C6EFC220069FFE1 /* HomeView.swift in Sources */,
 				151CCA672C72EE06003FC518 /* ProfileView.swift in Sources */,
 				15C5A3EC2C6DC8600069FFE1 /* whydateApp.swift in Sources */,
@@ -560,6 +568,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"whydate/Preview Content\"";
+				DEVELOPMENT_TEAM = AD6Q827Z79;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = whydate/Info.plist;
@@ -589,6 +598,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"whydate/Preview Content\"";
+				DEVELOPMENT_TEAM = AD6Q827Z79;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = whydate/Info.plist;

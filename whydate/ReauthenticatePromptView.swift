@@ -1,18 +1,39 @@
-//
-//  ReauthenticatePromptView.swift
-//  whydate
-//
-//  Created by Reda Boutayeb on 8/31/24.
-//
-
 import SwiftUI
+import FirebaseAuth
 
 struct ReauthenticatePromptView: View {
+    @Binding var isPresented: Bool
+    @Binding var password: String
+    var onConfirm: () -> Void
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 20) {
+            Text("Re-authenticate")
+                .font(.headline)
+            
+            SecureField("Enter your password", text: $password)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+            
+            HStack {
+                Button("Cancel") {
+                    isPresented = false
+                }
+                .padding()
+                
+                Spacer()
+                
+                Button("Confirm") {
+                    onConfirm()
+                    isPresented = false
+                }
+                .padding()
+            }
+        }
+        .padding()
+        .frame(width: 300, height: 150)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 8)
     }
-}
-
-#Preview {
-    ReauthenticatePromptView()
 }
