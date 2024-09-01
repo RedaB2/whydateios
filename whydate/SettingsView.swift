@@ -8,6 +8,8 @@ struct SettingsView: View {
     @State private var navigateToWelcome = false
     @State private var showingAlert = false
     @State private var deleteInProgress = false
+    @State private var showingReauthenticatePrompt = false
+    @State private var password = ""
     
     var body: some View {
         VStack(spacing: 20) {
@@ -33,7 +35,8 @@ struct SettingsView: View {
                     title: Text("Confirm Deletion"),
                     message: Text("Are you sure you want to delete your account and all associated data? This action cannot be undone."),
                     primaryButton: .destructive(Text("Delete")) {
-                        deleteAccount()
+                        // Show re-authentication prompt
+                        showingReauthenticatePrompt = true
                     },
                     secondaryButton: .cancel()
                 )
@@ -60,16 +63,35 @@ struct SettingsView: View {
             Spacer()
         }
         .padding()
+        .sheet(isPresented: $showingReauthenticatePrompt) {
+            ReauthenticatePromptView(isPresented: $showingReauthenticatePrompt, password: $password) {
+                reauthenticateAndDelete()
+            }
+        }
         .navigationDestination(isPresented: $navigateToWelcome) {
             WelcomeView(isUserLoggedIn: $isUserLoggedIn)
         }
     }
     
-    private func deleteAccount() {
+    private func reauthenticateAndDelete() {
         guard let user = Auth.auth().currentUser else { return }
         
         deleteInProgress = true
         
+        let credential = EmailAuthProvider.credential(withEmail: user.email ?? "", password: password)
+        user.reauthenticate(with: credential) { authResult, error in
+            if let error = error {
+                print("Error re-authenticating user: \(error.localizedDescription)")
+                deleteInProgress = false
+                return
+            }
+            
+            // Proceed with deletion
+            deleteAccount(user: user)
+        }
+    }
+    
+    private func deleteAccount(user: User) {
         let uid = user.uid
         let storage = Storage.storage()
         
@@ -92,16 +114,25 @@ struct SettingsView: View {
                 deleteInProgress = false
                 return
             }
-            
-            // Delete the user from Firebase Authentication
-            user.delete { error in
-                deleteInProgress = false
+
+            // Delete the questionnaire data from Firestore
+            Firestore.firestore().collection("questionnaires").document(uid).delete { error in
                 if let error = error {
-                    print("Error deleting user: \(error.localizedDescription)")
-                } else {
-                    print("User account deleted successfully.")
-                    isUserLoggedIn = false
-                    navigateToWelcome = true
+                    print("Error deleting questionnaire data: \(error.localizedDescription)")
+                    deleteInProgress = false
+                    return
+                }
+
+                // Delete the user from Firebase Authentication
+                user.delete { error in
+                    deleteInProgress = false
+                    if let error = error {
+                        print("Error deleting user: \(error.localizedDescription)")
+                    } else {
+                        print("User account deleted successfully.")
+                        isUserLoggedIn = false
+                        navigateToWelcome = true
+                    }
                 }
             }
         }
