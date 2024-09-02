@@ -4,6 +4,7 @@ import FirebaseFirestore
 
 class UserProfileViewModel: ObservableObject {
     @Published var photos: [String] = Array(repeating: "", count: 4) // Initialize with 4 empty slots
+    @Published var firstName: String = "N/A"
     @Published var height: String = "N/A"
     @Published var hometown: String = "N/A"
     @Published var age: String = "N/A"
@@ -13,6 +14,7 @@ class UserProfileViewModel: ObservableObject {
     @Published var schoolName: String = "N/A"
     @Published var potentialMatches: Int = 0
     @Published var profileReveals: Int = 0
+    @Published var hasCompletedQuestionnaire: Bool = false // New property
     
     func reset() {
         photos = Array(repeating: "", count: 4)
@@ -22,6 +24,22 @@ class UserProfileViewModel: ObservableObject {
         astrologicalSign = "N/A"
         major = "N/A"
         schoolName = "N/A"
+        hasCompletedQuestionnaire = false
+    }
+    
+    func checkQuestionnaireStatus(uid: String) {
+        let docRef = Firestore.firestore().collection("questionnaires").document(uid)
+        docRef.getDocument { document, error in
+            if let document = document, document.exists {
+                DispatchQueue.main.async {
+                    self.hasCompletedQuestionnaire = true
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.hasCompletedQuestionnaire = false
+                }
+            }
+        }
     }
     
     
@@ -130,6 +148,11 @@ class UserProfileViewModel: ObservableObject {
                 if let document = document, document.exists {
                     let data = document.data()
 
+                    //fetch the first name
+                    if let firstName = data?["firstName"] as? String {
+                        self.firstName = firstName
+                    }
+                    
                     // Fetch and set height
                     if let height = data?["height"] as? String {
                         self.height = height
@@ -327,7 +350,7 @@ struct ProfileView: View {
             EditHometownView(hometown: $viewModel.hometown, viewModel: viewModel, uid: uid)
         }
         .sheet(isPresented: $showQuestionnaire) {
-            QuestionnaireView(uid: uid)
+            QuestionnaireView(uid: uid, hasCompletedQuestionnaire: $viewModel.hasCompletedQuestionnaire)
         }
     }
     

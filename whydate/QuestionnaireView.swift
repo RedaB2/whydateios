@@ -3,6 +3,7 @@ import FirebaseFirestore
 
 struct QuestionnaireView: View {
     let uid: String
+    @Binding var hasCompletedQuestionnaire: Bool // Binding to notify HomeView
     @State private var isFirstTime = false
     @State private var answers: [String: String] = [:] // To store answers
     @State private var loading = true
@@ -51,6 +52,7 @@ struct QuestionnaireView: View {
                 print("Questionnaire saved successfully.")
                 self.answers = answers
                 self.isFirstTime = false
+                self.hasCompletedQuestionnaire = true // Notify HomeView that the questionnaire is completed
             }
         }
     }
