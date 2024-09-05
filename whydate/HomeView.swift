@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct HomeView: View {
     @Binding var isUserLoggedIn: Bool
@@ -7,6 +8,9 @@ struct HomeView: View {
     @State private var uid: String? = nil
     @StateObject private var viewModel = UserProfileViewModel()
     @State private var selectedTab = 0
+    @State private var numberOfMatches: Int = 0
+    @State private var bestMatch: Match? = nil
+    @State private var isProfileRevealed: Bool = false  // Track profile reveal status
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -70,11 +74,51 @@ struct HomeView: View {
                     Spacer()
                 }
                 HStack(spacing: 20) {
-                    InfoBox(number: viewModel.potentialMatches, label: "Potential Matches", numberColor: .blue)
+                    InfoBox(number: numberOfMatches, label: "Potential Matches", numberColor: .blue)
                     InfoBox(number: viewModel.profileReveals, label: "Profile Reveals", numberColor: .pink)
                 }
+                .onAppear{
+                    if let uid = uid {
+                        // Call findMatches to calculate matches and update Firestore
+                        findMatches(for: uid) { matches in
+                            // Update the number of matches based on the Firestore field
+                            calculatePotentialMatches(for: uid) { matchesCount in
+                                self.numberOfMatches = matchesCount
+                            }
+                        }
+                    }
+                }
                 .padding(.top, 20)
+                
+                if let match = bestMatch {
+                    // Show "Anonymous" or First Name based on profile reveal status
+                    let displayName = isProfileRevealed ? (match.matchData["firstName"] as? String ?? "Unknown") : "Anonymous"
+                    
+                    Text("Best Match: \(displayName)")
+                        .font(.headline)
+                    Text("Score: \(match.score)")
+                        .font(.subheadline)
+                } else {
+                    Text("No match found.")
+                        .font(.headline)
+                }
+                
+                
                 Spacer()
+            }
+            .onAppear{
+                if let uid = uid {
+                    // Call findMatches to calculate matches and update Firestore
+                    findBestMatch(for: uid) { match in
+                        self.bestMatch = match
+                        if let matchUID = match?.uid {
+                            // Fetch profile reveal status from Firestore
+                            fetchProfileRevealStatus(for: matchUID) { revealed in
+                                self.isProfileRevealed = revealed
+                            }
+                        }
+                    }
+                }
             }
             .navigationBarHidden(true)
         }
@@ -97,13 +141,48 @@ struct HomeView: View {
                     ButtonBox(selectedTab: $selectedTab) // Pass the binding to the ButtonBox
                 }
                 HStack(spacing: 20) {
-                    InfoBox(number: viewModel.potentialMatches, label: "Potential Matches", numberColor: .blue)
+                    InfoBox(number: numberOfMatches, label: "Potential Matches", numberColor: .blue)
                     InfoBox(number: viewModel.profileReveals, label: "Profile Reveals", numberColor: .pink)
                 }
                 .padding(.top, 20)
                 Spacer()
             }
             .navigationBarHidden(true)
+        }
+    }
+
+    // Function to fetch profile reveal status
+    func fetchProfileRevealStatus(for matchUID: String, completion: @escaping (Bool) -> Void) {
+        let db = Firestore.firestore()
+        let matchRef = db.collection("users").document(matchUID)
+        
+        matchRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let isRevealed = document.data()?["isProfileRevealed"] as? Bool ?? false
+                completion(isRevealed)
+            } else {
+                print("Match document does not exist")
+                completion(false)
+            }
+        }
+    }
+    
+    // Function to fetch the number of matches
+    func calculatePotentialMatches(for userUID: String, completion: @escaping (Int) -> Void) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(userUID)
+        
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                if let potentialMatches = document.data()?["potentialMatches"] as? Int {
+                    completion(potentialMatches)  // Send the count to the UI
+                } else {
+                    completion(0)  // Default to 0 if no matches
+                }
+            } else {
+                print("User document does not exist")
+                completion(0)
+            }
         }
     }
 }

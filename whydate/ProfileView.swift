@@ -4,7 +4,7 @@ import FirebaseFirestore
 
 class UserProfileViewModel: ObservableObject {
     @Published var photos: [String] = Array(repeating: "", count: 4) // Initialize with 4 empty slots
-    @Published var firstName: String = "N/A"
+    @Published var firstName: String = "{username}"
     @Published var height: String = "N/A"
     @Published var hometown: String = "N/A"
     @Published var age: String = "N/A"
@@ -12,7 +12,6 @@ class UserProfileViewModel: ObservableObject {
     @Published var major: String = "N/A"
     @Published var school: String = "N/A"
     @Published var schoolName: String = "N/A"
-    @Published var potentialMatches: Int = 0
     @Published var profileReveals: Int = 0
     @Published var hasCompletedQuestionnaire: Bool = false // New property
     
@@ -142,57 +141,61 @@ class UserProfileViewModel: ObservableObject {
         }
     }
     
+    // Fetch current user data and update with calculated values
     func fetchUserProfileData(uid: String) {
-            let docRef = Firestore.firestore().collection("users").document(uid)
-            docRef.getDocument { document, error in
-                if let document = document, document.exists {
-                    let data = document.data()
+        let docRef = Firestore.firestore().collection("users").document(uid)
+        docRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data() // Store the document data in a mutable variable
 
-                    //fetch the first name
-                    if let firstName = data?["firstName"] as? String {
-                        self.firstName = firstName
-                    }
-                    
-                    // Fetch and set height
-                    if let height = data?["height"] as? String {
-                        self.height = height
-                    }
-
-                    // Fetch and set hometown
-                    if let hometown = data?["hometown"] as? String {
-                        self.hometown = hometown
-                    }
-                    
-                    // Fetch and set major
-                    if let major = data?["major"] as? String {
-                        self.major = major
-                    }
-                    // Fetch and set major
-                    if let schoolName = data?["schoolName"] as? String {
-                        self.schoolName = schoolName
-                    }
-                    
-                    // Fetch and set potentialMatches
-                    if let potentialMatches = data?["potentialMatches"] as? Int {
-                        self.potentialMatches = potentialMatches
-                    }
-
-                    // Fetch and set profileReveals
-                    if let profileReveals = data?["profileReveals"] as? Int {
-                        self.profileReveals = profileReveals
-                    }
-
-                    // Fetch and calculate age
-                    if let timestamp = data?["dateOfBirth"] as? Timestamp {
-                        let dateOfBirth = timestamp.dateValue()
-                        self.age = self.calculateAge(from: dateOfBirth)
-                        self.astrologicalSign = self.calculateAstrologicalSign(from: dateOfBirth)
-                    }
-                } else {
-                    print("Document does not exist")
+                // Fetch and set user data
+                if let firstName = data?["firstName"] as? String {
+                    self.firstName = firstName
                 }
+                if let height = data?["height"] as? String {
+                    self.height = height
+                }
+                if let hometown = data?["hometown"] as? String {
+                    self.hometown = hometown
+                }
+                if let major = data?["major"] as? String {
+                    self.major = major
+                }
+                if let schoolName = data?["schoolName"] as? String {
+                    self.schoolName = schoolName
+                }
+                if let timestamp = data?["dateOfBirth"] as? Timestamp {
+                    let dateOfBirth = timestamp.dateValue()
+                    self.age = self.calculateAge(from: dateOfBirth)
+                    self.astrologicalSign = self.calculateAstrologicalSign(from: dateOfBirth)
+
+                    // Save the calculated age back to Firestore
+                    docRef.updateData([
+                        "age": self.age
+                    ]) { error in
+                        if let error = error {
+                            print("Error updating age: \(error)")
+                        } else {
+                            print("Age successfully updated")
+                        }
+                    }
+                    
+                    // Save the calculated age back to Firestore
+                    docRef.updateData([
+                        "astrologicalSign": self.astrologicalSign
+                    ]) { error in
+                        if let error = error {
+                            print("Error updating AstrologicalSign: \(error)")
+                        } else {
+                            print("Age successfully updated")
+                        }
+                    }
+                }
+            } else {
+                print("Document does not exist")
             }
         }
+    }
 
         private func calculateAge(from dateOfBirth: Date) -> String {
             let calendar = Calendar.current
