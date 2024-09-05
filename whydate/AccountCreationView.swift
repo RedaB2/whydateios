@@ -215,11 +215,13 @@ struct AccountCreationView: View {
     }
 
     private func isValidEmail(_ email: String) -> Bool {
-        return email.lowercased().hasSuffix("@wpi.edu") || email.lowercased().hasSuffix("@purdue.edu") || email.lowercased().hasSuffix("@whydate.app")
+        return true
+        //return email.lowercased().hasSuffix("@wpi.edu") || email.lowercased().hasSuffix("@icloud.com") || email.lowercased().hasSuffix("@whydate.app")
     }
     
     private func isSchoolEmail(_ email: String) -> Bool {
-        return email.lowercased().hasSuffix(".edu") || email.lowercased().hasSuffix(".app")
+        return true
+        //return email.lowercased().hasSuffix(".edu") || email.lowercased().hasSuffix(".app") || email.lowercased().hasSuffix(".com")
     }
     
     private func checkForEmptyFields() -> String? {
@@ -311,6 +313,9 @@ struct AccountCreationView: View {
         
         if email.lowercased().hasSuffix("@wpi.edu"){
             schoolName = "WPI"
+        }
+        if email.lowercased().hasSuffix("@icloud.com"){
+            schoolName = "Test University"
         }
         
         let data: [String: Any] = [
