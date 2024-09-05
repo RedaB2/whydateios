@@ -14,6 +14,7 @@ class UserProfileViewModel: ObservableObject {
     @Published var schoolName: String = "N/A"
     @Published var profileReveals: Int = 0
     @Published var hasCompletedQuestionnaire: Bool = false // New property
+    @Published var isPaired: Bool = false
     
     func reset() {
         photos = Array(repeating: "", count: 4)
@@ -164,6 +165,11 @@ class UserProfileViewModel: ObservableObject {
                 if let schoolName = data?["schoolName"] as? String {
                     self.schoolName = schoolName
                 }
+                
+                if let isPaired = data?["isPaired"] as? Bool {
+                    self.isPaired = isPaired
+                }
+                
                 if let timestamp = data?["dateOfBirth"] as? Timestamp {
                     let dateOfBirth = timestamp.dateValue()
                     self.age = self.calculateAge(from: dateOfBirth)
