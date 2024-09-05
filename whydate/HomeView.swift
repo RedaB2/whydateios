@@ -30,13 +30,24 @@ struct HomeView: View {
                     .tag(0)
             }
             
-            MessageView()
-                .tabItem {
-                    Image(systemName: "message.fill")
-                    Text("Messages")
+            if let uid = uid {
+                if viewModel.isPaired {
+                    MessagingView(userUID: uid)
+                        .tabItem {
+                            Image(systemName: "message.fill")
+                            Text("Messages")
+                        }
+                        .tag(1)
+                } else {
+                    Text("We are working on finding a match for you.")
+                        .tabItem {
+                            Image(systemName: "message.fill")
+                            Text("Messages")
+                        }
+                        .tag(1)
                 }
-                .tag(1)
-            
+            }
+        
             if let uid = uid {
                 ProfileView(viewModel: viewModel, uid: uid)
                     .tabItem {
@@ -62,6 +73,7 @@ struct HomeView: View {
             }
         }
     }
+    
 
     private var regularHomeView: some View {
         NavigationStack {
@@ -91,15 +103,16 @@ struct HomeView: View {
                 .padding(.top, 20)
                 
                 if let match = bestMatch {
-                    // Show "Anonymous" or First Name based on profile reveal status
-                    let displayName = isProfileRevealed ? (match.matchData["firstName"] as? String ?? "Unknown") : "Anonymous"
+                    // Display the paired user's first name and their score
+                    let pairedUserName = match.matchData["firstName"] as? String ?? "Unknown"
                     
-                    Text("Best Match: \(displayName)")
+                    Text("You were paired with \(pairedUserName)")
                         .font(.headline)
+                    
                     Text("Score: \(match.score)")
                         .font(.subheadline)
                 } else {
-                    Text("No match found.")
+                    Text("Working on finding the match!")
                         .font(.headline)
                 }
                 
@@ -116,6 +129,17 @@ struct HomeView: View {
                             fetchProfileRevealStatus(for: matchUID) { revealed in
                                 self.isProfileRevealed = revealed
                             }
+                        }
+                    }
+                    
+                    // Call findBestMatchAndPair and handle the completion
+                    findBestMatchAndPair(for: uid) { pairedMatch in
+                        if let match = pairedMatch {
+                            // Update UI or state based on the paired match
+                            self.bestMatch = match
+                            print("Successfully paired with match: \(match.uid)")
+                        } else {
+                            print("No available match to pair with.")
                         }
                     }
                 }

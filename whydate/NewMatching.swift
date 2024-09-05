@@ -197,50 +197,56 @@ func findBestMatch(for userUID: String, completion: @escaping (Match?) -> Void) 
 
 func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) -> Void) {
     let db = Firestore.firestore()
-
+    
     // Fetch the user's matched data (UIDs + scores) from Firestore
     let userRef = db.collection("users").document(userUID)
     userRef.getDocument { document, error in
-        if let document = document, document.exists {
-            // Check if the user is already paired
-            if let isPaired = document.data()?["isPaired"] as? Bool, isPaired {
-                print("User is already paired.")
-                completion(nil)
-                return
-            }
-            
-            if let matchedData = document.data()?["matchedData"] as? [String: Int], !matchedData.isEmpty {
-                
-                // Find the best match who is not already paired
-                let bestMatchUID = matchedData
-                    .filter { uid, _ in
-                        // Filter out users who are already paired
-                        let matchRef = db.collection("users").document(uid)
-                        var isPaired = false
-                        let group = DispatchGroup()
-                        group.enter()
-                        matchRef.getDocument { (matchDoc, matchError) in
-                            if let matchDoc = matchDoc, matchDoc.exists {
-                                isPaired = matchDoc.data()?["isPaired"] as? Bool ?? false
-                            }
-                            group.leave()
-                        }
-                        group.wait()
-                        return !isPaired
-                    }
-                    .max(by: { a, b in a.value < b.value })?.key
+        guard let document = document, document.exists else {
+            print("User document does not exist")
+            completion(nil)
+            return
+        }
+        
+        // Check if the user is already paired
+        if let isPaired = document.data()?["isPaired"] as? Bool, isPaired {
+            print("User is already paired.")
+            completion(nil)
+            return
+        }
+        
+        // Fetch matched data (UIDs + scores)
+        if let matchedData = document.data()?["matchedData"] as? [String: Int], !matchedData.isEmpty {
+            var availableMatches: [(uid: String, score: Int)] = []
+            let dispatchGroup = DispatchGroup()
 
-                if let bestMatchUID = bestMatchUID {
+            for (matchUID, score) in matchedData {
+                dispatchGroup.enter()
+
+                // Fetch match user data
+                let matchRef = db.collection("users").document(matchUID)
+                matchRef.getDocument { matchDoc, error in
+                    if let matchDoc = matchDoc, matchDoc.exists {
+                        let isPaired = matchDoc.data()?["isPaired"] as? Bool ?? false
+                        if !isPaired {
+                            availableMatches.append((uid: matchUID, score: score))
+                        }
+                    }
+                    dispatchGroup.leave()
+                }
+            }
+
+            // After all async operations are completed
+            dispatchGroup.notify(queue: .main) {
+                if let bestMatch = availableMatches.max(by: { $0.score < $1.score }) {
                     // Fetch the best match's user data
-                    let bestMatchRef = db.collection("users").document(bestMatchUID)
-                    bestMatchRef.getDocument { matchDoc, matchError in
+                    let bestMatchRef = db.collection("users").document(bestMatch.uid)
+                    bestMatchRef.getDocument { matchDoc, error in
                         if let matchDoc = matchDoc, matchDoc.exists {
                             let matchData = matchDoc.data() ?? [:]
-                            let score = matchedData[bestMatchUID] ?? 0
-                            let bestMatch = Match(uid: bestMatchUID, score: score, matchData: matchData)
+                            let bestMatch = Match(uid: bestMatch.uid, score: bestMatch.score, matchData: matchData)
 
                             // Pair the two users
-                            pairUsers(userUID: userUID, matchUID: bestMatchUID) { success in
+                            pairUsers(userUID: userUID, matchUID: bestMatch.uid) { success in
                                 if success {
                                     completion(bestMatch)
                                 } else {
@@ -248,20 +254,17 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
                                 }
                             }
                         } else {
-                            print("Error fetching best match data: \(String(describing: matchError))")
+                            print("Error fetching best match data: \(String(describing: error))")
                             completion(nil)
                         }
                     }
                 } else {
-                    print("No matches found.")
+                    print("No available matches found.")
                     completion(nil)
                 }
-            } else {
-                print("No matched data found.")
-                completion(nil)
             }
         } else {
-            print("User document does not exist")
+            print("No matched data found.")
             completion(nil)
         }
     }
@@ -278,12 +281,14 @@ func pairUsers(userUID: String, matchUID: String, completion: @escaping (Bool) -
     
     batch.updateData([
         "isPaired": true,
-        "currentMatchUID": matchUID
+        "currentMatchUID": matchUID,
+        "isProfileRevealed": false
     ], forDocument: userRef)
 
     batch.updateData([
         "isPaired": true,
-        "currentMatchUID": userUID
+        "currentMatchUID": userUID,
+        "isProfileRevealed": false
     ], forDocument: matchRef)
 
     batch.commit { error in
