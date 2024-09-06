@@ -15,6 +15,7 @@ class UserProfileViewModel: ObservableObject {
     @Published var profileReveals: Int = 0
     @Published var hasCompletedQuestionnaire: Bool = false // New property
     @Published var isPaired: Bool = false
+    @Published var currentMatchUID = ""
     
     func reset() {
         photos = Array(repeating: "", count: 4)
