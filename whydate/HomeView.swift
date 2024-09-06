@@ -11,6 +11,8 @@ struct HomeView: View {
     @State private var numberOfMatches: Int = 0
     @State private var bestMatch: Match? = nil
     @State private var isProfileRevealed: Bool = false  // Track profile reveal status
+    @State private var isPaired: Bool? = nil
+    @State private var currentMatchFirstName: String? = nil
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -102,19 +104,26 @@ struct HomeView: View {
                 }
                 .padding(.top, 20)
                 
-                if let match = bestMatch {
-                    // Display the paired user's first name and their score
-                    let pairedUserName = match.matchData["firstName"] as? String ?? "Unknown"
-                    
-                    Text("You were paired with \(pairedUserName)")
-                        .font(.headline)
-                    
-                    Text("Score: \(match.score)")
-                        .font(.subheadline)
+                // Check isPaired state to determine what to display
+                if let isPaired = isPaired {
+                    if isPaired {
+                        if let currentMatchFirstName = currentMatchFirstName {
+                            Text("You were paired with \(currentMatchFirstName)")
+                                .font(.headline)
+                        } else {
+                            Text("Working on finding the match!")
+                                .font(.headline)
+                        }
+                    } else {
+                        Text("Working on finding your match!")
+                            .font(.headline)
+                    }
                 } else {
-                    Text("Working on finding the match!")
+                    Text("Loading...")
                         .font(.headline)
                 }
+                
+                
                 
                 
                 Spacer()
@@ -142,6 +151,18 @@ struct HomeView: View {
                             print("No available match to pair with.")
                         }
                     }
+                    
+                    // Fetch the user's pairing status
+                    fetchIsPaired(for: uid) { paired in
+                        self.isPaired = paired  // Update the state
+                        if paired {
+                            // If paired, fetch and update the current match's first name
+                            fetchCurrentMatchFirstName(for: uid) { firstName in
+                                self.currentMatchFirstName = firstName  // Update the state
+                            }
+                        }
+                    }
+                    
                 }
             }
             .navigationBarHidden(true)

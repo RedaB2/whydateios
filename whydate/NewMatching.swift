@@ -70,6 +70,12 @@ func findMatches(for userUID: String, completion: @escaping ([Match]) -> Void) {
             return
         }
 
+        // Get the gender of the current user
+        guard let userGender = userData["gender"] as? String else {
+            print("User gender not found")
+            return
+        }
+
         // Fetch current user's questionnaire
         let userQuestionnaireRef = db.collection("questionnaires").document(userUID)
         userQuestionnaireRef.getDocument { (doc, err) in
@@ -96,6 +102,19 @@ func findMatches(for userUID: String, completion: @escaping ([Match]) -> Void) {
                     }
 
                     let matchData = document.data()
+
+                    // Get the gender of the potential match
+                    guard let matchGender = matchData["gender"] as? String else {
+                        print("Match gender not found")
+                        continue
+                    }
+
+                    // Ensure gender compatibility: Male with Female, Other with Other
+                    if (userGender == "Male" && matchGender != "Female") ||
+                       (userGender == "Female" && matchGender != "Male") ||
+                       (userGender == "Other" && matchGender != "Other") {
+                        continue  // Skip this match if gender compatibility fails
+                    }
 
                     // Debug: Print all users being considered for a match
                     print("Considering user: \(matchUID), Name: \(matchData["firstName"] ?? "Unknown")")
@@ -197,7 +216,7 @@ func findBestMatch(for userUID: String, completion: @escaping (Match?) -> Void) 
 
 func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) -> Void) {
     let db = Firestore.firestore()
-    
+
     // Fetch the user's matched data (UIDs + scores) from Firestore
     let userRef = db.collection("users").document(userUID)
     userRef.getDocument { document, error in
@@ -206,14 +225,21 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
             completion(nil)
             return
         }
-        
+
+        // Get the gender of the current user
+        guard let userGender = document.data()?["gender"] as? String else {
+            print("User gender not found")
+            completion(nil)
+            return
+        }
+
         // Check if the user is already paired
         if let isPaired = document.data()?["isPaired"] as? Bool, isPaired {
             print("User is already paired.")
             completion(nil)
             return
         }
-        
+
         // Fetch matched data (UIDs + scores)
         if let matchedData = document.data()?["matchedData"] as? [String: Int], !matchedData.isEmpty {
             var availableMatches: [(uid: String, score: Int)] = []
@@ -227,7 +253,14 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
                 matchRef.getDocument { matchDoc, error in
                     if let matchDoc = matchDoc, matchDoc.exists {
                         let isPaired = matchDoc.data()?["isPaired"] as? Bool ?? false
-                        if !isPaired {
+                        let matchGender = matchDoc.data()?["gender"] as? String ?? ""
+                        
+                        // Ensure gender compatibility
+                        if !isPaired && (
+                            (userGender == "Male" && matchGender == "Female") ||
+                            (userGender == "Female" && matchGender == "Male") ||
+                            (userGender == "Other" && matchGender == "Other")
+                        ) {
                             availableMatches.append((uid: matchUID, score: score))
                         }
                     }
@@ -298,6 +331,52 @@ func pairUsers(userUID: String, matchUID: String, completion: @escaping (Bool) -
         } else {
             print("Users \(userUID) and \(matchUID) successfully paired.")
             completion(true)
+        }
+    }
+}
+
+func fetchCurrentMatchFirstName(for userUID: String, completion: @escaping (String?) -> Void) {
+    let db = Firestore.firestore()
+    let userRef = db.collection("users").document(userUID)
+
+    // Fetch the user's document to get the currentMatchUID
+    userRef.getDocument { (document, error) in
+        if let document = document, document.exists {
+            // Retrieve the currentMatchUID
+            if let currentMatchUID = document.data()?["currentMatchUID"] as? String {
+                // Now fetch the matched user's first name using the currentMatchUID
+                let matchRef = db.collection("users").document(currentMatchUID)
+                matchRef.getDocument { (matchDoc, matchError) in
+                    if let matchDoc = matchDoc, matchDoc.exists {
+                        let firstName = matchDoc.data()?["firstName"] as? String ?? "Unknown"
+                        completion(firstName)  // Return the first name of the match
+                    } else {
+                        print("Error fetching match's first name: \(String(describing: matchError))")
+                        completion(nil)  // Return nil if there was an error fetching the match data
+                    }
+                }
+            } else {
+                print("No current match found for user \(userUID)")
+                completion(nil)  // Return nil if no currentMatchUID exists
+            }
+        } else {
+            print("Error fetching user data: \(String(describing: error))")
+            completion(nil)  // Return nil if the user document doesn't exist
+        }
+    }
+}
+
+func fetchIsPaired(for userUID: String, completion: @escaping (Bool) -> Void) {
+    let db = Firestore.firestore()
+    let userRef = db.collection("users").document(userUID)
+
+    userRef.getDocument { (document, error) in
+        if let document = document, document.exists {
+            let isPaired = document.data()?["isPaired"] as? Bool ?? false
+            completion(isPaired)
+        } else {
+            print("Error fetching isPaired status: \(String(describing: error))")
+            completion(false)  // Default to false if there's an error or the document doesn't exist
         }
     }
 }

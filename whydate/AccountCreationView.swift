@@ -6,7 +6,6 @@ import FirebaseFirestore
 
 struct AccountCreationView: View {
     @State private var firstName: String = ""
-    @State private var lastName: String = ""
     @State private var email: String = ""
     @State private var schoolName: String = ""
     @State private var potentialMatches: Int = 0
@@ -14,7 +13,8 @@ struct AccountCreationView: View {
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
     @State private var profileImage: UIImage? = nil
-    @State private var selectedMajor: String = ""
+    @State private var selectedMajor: String = "Undeclared"
+    @State private var selectedGender: String = "Male"
     @State private var dateOfBirth: Date = Date()
     @State private var showImagePicker: Bool = false
     @State private var showVerificationScreen = false
@@ -28,16 +28,22 @@ struct AccountCreationView: View {
     
     let majors = ["Undeclared","Computer Science", "Mechanical Engineering", "Electrical Engineering", "Mathematics", "Physics", "Chemistry", "Biology", "Economics", "Business Administration", "Civil Engineering", "Architecture"]
     
+    let genders = ["Male","Female", "Other"]
+    
     var body: some View {
         ZStack {
             Color.white
                 .edgesIgnoringSafeArea(.all)
             
-            VStack() {
+            VStack(spacing: 10) {
+                Spacer(minLength: 20)
+                
+                
                 Image("WhyDate")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 150, height: 100)
+                
                 
                 if let profileImageError = profileImageError {
                     Text(profileImageError)
@@ -81,7 +87,6 @@ struct AccountCreationView: View {
                 }
                 
                 
-                CustomTextField(placeholder: "Last Name (optional)", text: $lastName, isSecure: false)
                 CustomTextField(placeholder: "Email", text: $email, isSecure: false)
                 if let emailError = emailError {
                     Text(emailError)
@@ -109,15 +114,27 @@ struct AccountCreationView: View {
                         .padding(.bottom, -10)
                 }
 
-                Text("What are you studying?")
-                
-                Picker("Major", selection: $selectedMajor) {
-                    ForEach(majors, id: \.self) { major in
-                        Text(major).tag(major)
+                HStack{
+                    Text("Major")
+                        
+                    Picker("Major", selection: $selectedMajor) {
+                        ForEach(majors, id: \.self) { major in
+                            Text(major).tag(major)
+                        }
                     }
+                    .pickerStyle(MenuPickerStyle())
+
+                    
+                    Text("Gender")
+                    
+                    Picker("Gender", selection: $selectedGender) {
+                        ForEach(genders, id: \.self) { gender in
+                            Text(gender).tag(gender)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+
                 }
-                .pickerStyle(MenuPickerStyle())
-                .padding(.horizontal, 20)
                 
                 DatePicker("What's your birthday?", selection: $dateOfBirth, displayedComponents: .date)
                     .datePickerStyle(CompactDatePickerStyle())
@@ -130,6 +147,7 @@ struct AccountCreationView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, -10)
                 }
+
                 
                 Button(action: {
                     clearErrors()
@@ -160,8 +178,6 @@ struct AccountCreationView: View {
                         .padding(.horizontal, 20)
                 }
 
-                Spacer()
-
                 HStack {
                     Text("Already have an account?")
                         .foregroundColor(.gray)
@@ -171,7 +187,8 @@ struct AccountCreationView: View {
                             .fontWeight(.bold)
                     }
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, 20)
+                
             }
             .navigationDestination(isPresented: $showVerificationScreen) {
                 EmailVerificationView()
@@ -324,7 +341,9 @@ struct AccountCreationView: View {
             "schoolName": schoolName,
             "potentialMatches": potentialMatches,
             "profileReveals": profileReveals,
+            "isPaired": false,
             "major": selectedMajor,
+            "gender": selectedGender,
             "dateOfBirth": dateOfBirth,
             "photos": [photoUrl] // Store the first photo URL in the photos array
         ]
@@ -381,10 +400,4 @@ struct CustomTextField: View {
         )
         .padding(.horizontal, 20)
     }
-}
-
-
-
-#Preview {
-    AccountCreationView(isUserLoggedIn: .constant(false))
 }
