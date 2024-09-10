@@ -11,12 +11,11 @@
 		150E4E532C83F0BA004E5AC9 /* ReauthenticatePromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150E4E522C83F0BA004E5AC9 /* ReauthenticatePromptView.swift */; };
 		151CCA612C72E22E003FC518 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CCA602C72E22E003FC518 /* SettingsView.swift */; };
 		151CCA672C72EE06003FC518 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CCA662C72EE06003FC518 /* ProfileView.swift */; };
-		152ECCAD2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 152ECCAC2C714A6E00BA270B /* Comfortaa-Regular.ttf */; };
-		152ECCAE2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 152ECCAC2C714A6E00BA270B /* Comfortaa-Regular.ttf */; };
-		152ECCAF2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 152ECCAC2C714A6E00BA270B /* Comfortaa-Regular.ttf */; };
 		156C74702C892F3E0050B7AD /* NewMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156C746F2C892F3E0050B7AD /* NewMatching.swift */; };
 		156C74722C8965660050B7AD /* MessagingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156C74712C8965660050B7AD /* MessagingView.swift */; };
 		156C74762C8976CB0050B7AD /* OtherUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156C74752C8976CB0050B7AD /* OtherUserProfileView.swift */; };
+		156E8B1A2C8FE774004CBE9D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A4212C6EF85F0069FFE1 /* GoogleService-Info.plist */; };
+		156E8B1E2C8FE7BE004CBE9D /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B1C2C8FE7A9004CBE9D /* Comfortaa-Regular.ttf */; };
 		15C5A3EC2C6DC8600069FFE1 /* whydateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */; };
 		15C5A3F02C6DC8610069FFE1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A3EF2C6DC8610069FFE1 /* Assets.xcassets */; };
 		15C5A3F32C6DC8610069FFE1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A3F22C6DC8610069FFE1 /* Preview Assets.xcassets */; };
@@ -26,7 +25,6 @@
 		15C5A4182C6DCAEB0069FFE1 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5A4172C6DCAEB0069FFE1 /* WelcomeView.swift */; };
 		15C5A41A2C6DCDA40069FFE1 /* AccountCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5A4192C6DCDA40069FFE1 /* AccountCreationView.swift */; };
 		15C5A41C2C6DD7E40069FFE1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5A41B2C6DD7E40069FFE1 /* LoginView.swift */; };
-		15C5A41E2C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A41D2C6EF8570069FFE1 /* GoogleService-Info.plist */; };
 		15C5A41F2C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A41D2C6EF8570069FFE1 /* GoogleService-Info.plist */; };
 		15C5A4202C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A41D2C6EF8570069FFE1 /* GoogleService-Info.plist */; };
 		15C5A4242C6EF98C0069FFE1 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 15C5A4232C6EF98C0069FFE1 /* FirebaseAnalytics */; };
@@ -80,11 +78,11 @@
 		150E4E522C83F0BA004E5AC9 /* ReauthenticatePromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReauthenticatePromptView.swift; sourceTree = "<group>"; };
 		151CCA602C72E22E003FC518 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		151CCA662C72EE06003FC518 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		152ECCAC2C714A6E00BA270B /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Comfortaa-Regular.ttf"; path = "../../../../Downloads/Comfortaa/static/Comfortaa-Regular.ttf"; sourceTree = "<group>"; };
 		152ECCB02C714B4900BA270B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		156C746F2C892F3E0050B7AD /* NewMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMatching.swift; sourceTree = "<group>"; };
 		156C74712C8965660050B7AD /* MessagingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingView.swift; sourceTree = "<group>"; };
 		156C74752C8976CB0050B7AD /* OtherUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherUserProfileView.swift; sourceTree = "<group>"; };
+		156E8B1C2C8FE7A9004CBE9D /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Comfortaa-Regular.ttf"; sourceTree = "<group>"; };
 		15C5A3E82C6DC8600069FFE1 /* whydate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whydate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = whydateApp.swift; sourceTree = "<group>"; };
 		15C5A3EF2C6DC8610069FFE1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -156,7 +154,7 @@
 		152ECCAB2C714A4500BA270B /* ProjectFonts */ = {
 			isa = PBXGroup;
 			children = (
-				152ECCAC2C714A6E00BA270B /* Comfortaa-Regular.ttf */,
+				156E8B1C2C8FE7A9004CBE9D /* Comfortaa-Regular.ttf */,
 			);
 			path = ProjectFonts;
 			sourceTree = "<group>";
@@ -366,10 +364,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				152ECCAD2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */,
+				156E8B1E2C8FE7BE004CBE9D /* Comfortaa-Regular.ttf in Resources */,
+				156E8B1A2C8FE774004CBE9D /* GoogleService-Info.plist in Resources */,
 				15C5A3F32C6DC8610069FFE1 /* Preview Assets.xcassets in Resources */,
 				15C5A3F02C6DC8610069FFE1 /* Assets.xcassets in Resources */,
-				15C5A41E2C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,7 +375,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				152ECCAE2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */,
 				15C5A41F2C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -386,7 +383,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				152ECCAF2C714A6E00BA270B /* Comfortaa-Regular.ttf in Resources */,
 				15C5A4202C6EF8570069FFE1 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
