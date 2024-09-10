@@ -48,6 +48,12 @@ func calculateMatchScore(userData: [String: Any], matchData: [String: Any], user
        userSchool == matchSchool {
         score += 10
     }
+    // Matching Year
+    if let userYear = userData["year"] as? String,
+       let matchYear = matchData["year"] as? String,
+       userYear == matchYear {
+        score += 10
+    }
     
     // Matching questionnaire answers
     for (question, userAnswer) in userQuestionnaire {
@@ -172,48 +178,6 @@ func findMatches(for userUID: String, completion: @escaping ([Match]) -> Void) {
     }
 }
 
-func findBestMatch(for userUID: String, completion: @escaping (Match?) -> Void) {
-    let db = Firestore.firestore()
-
-    // Fetch the user's matched data (UIDs + scores) from Firestore
-    let userRef = db.collection("users").document(userUID)
-    userRef.getDocument { document, error in
-        if let document = document, document.exists {
-            if let matchedData = document.data()?["matchedData"] as? [String: Int], !matchedData.isEmpty {
-                
-                // Find the UID with the highest score
-                if let bestMatchUID = matchedData.max(by: { a, b in a.value < b.value })?.key {
-                    
-                    // Fetch the best match's user data
-                    let bestMatchRef = db.collection("users").document(bestMatchUID)
-                    bestMatchRef.getDocument { matchDoc, matchError in
-                        if let matchDoc = matchDoc, matchDoc.exists {
-                            let matchData = matchDoc.data() ?? [:]
-                            let score = matchedData[bestMatchUID] ?? 0
-                            let bestMatch = Match(uid: bestMatchUID, score: score, matchData: matchData)
-                            
-                            // Return the best match
-                            completion(bestMatch)
-                        } else {
-                            print("Error fetching best match data: \(String(describing: matchError))")
-                            completion(nil)
-                        }
-                    }
-                } else {
-                    print("No matches found.")
-                    completion(nil)
-                }
-            } else {
-                print("No matched data found.")
-                completion(nil)
-            }
-        } else {
-            print("User document does not exist")
-            completion(nil)
-        }
-    }
-}
-
 func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) -> Void) {
     let db = Firestore.firestore()
 
@@ -278,8 +242,8 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
                             let matchData = matchDoc.data() ?? [:]
                             let bestMatch = Match(uid: bestMatch.uid, score: bestMatch.score, matchData: matchData)
 
-                            // Pair the two users
-                            pairUsers(userUID: userUID, matchUID: bestMatch.uid) { success in
+                            // Pair the two users and pass the score to be stored
+                            pairUsers(userUID: userUID, matchUID: bestMatch.uid, score: bestMatch.score) { success in
                                 if success {
                                     completion(bestMatch)
                                 } else {
@@ -303,10 +267,10 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
     }
 }
 
-func pairUsers(userUID: String, matchUID: String, completion: @escaping (Bool) -> Void) {
+func pairUsers(userUID: String, matchUID: String, score: Int, completion: @escaping (Bool) -> Void) {
     let db = Firestore.firestore()
 
-    // Mark both users as paired and store each other's UID
+    // Mark both users as paired and store each other's UID and score
     let userRef = db.collection("users").document(userUID)
     let matchRef = db.collection("users").document(matchUID)
 
@@ -315,12 +279,14 @@ func pairUsers(userUID: String, matchUID: String, completion: @escaping (Bool) -
     batch.updateData([
         "isPaired": true,
         "currentMatchUID": matchUID,
+        "currentMatchScore": score,  // Store the score of the match
         "isProfileRevealed": false
     ], forDocument: userRef)
 
     batch.updateData([
         "isPaired": true,
         "currentMatchUID": userUID,
+        "currentMatchScore": score,  // Store the score of the match
         "isProfileRevealed": false
     ], forDocument: matchRef)
 
@@ -329,7 +295,7 @@ func pairUsers(userUID: String, matchUID: String, completion: @escaping (Bool) -
             print("Error pairing users: \(error)")
             completion(false)
         } else {
-            print("Users \(userUID) and \(matchUID) successfully paired.")
+            print("Users \(userUID) and \(matchUID) successfully paired with score \(score).")
             completion(true)
         }
     }
@@ -380,6 +346,77 @@ func fetchIsPaired(for userUID: String, completion: @escaping (Bool) -> Void) {
         }
     }
 }
+
+func fetchCurrentMatchScore(for userUID: String, completion: @escaping (String?) -> Void) {
+    let db = Firestore.firestore()
+    let userRef = db.collection("users").document(userUID)
+    
+    // Fetch the user's document to get the currentMatchScore
+    userRef.getDocument { (document, error) in
+        if let document = document, document.exists {
+            // Check if currentMatchScore is stored as an Int or Double
+            if let currentMatchScore = document.data()?["currentMatchScore"] as? Int {
+                completion(String(currentMatchScore))  // Convert Int to String
+            } else if let currentMatchScore = document.data()?["currentMatchScore"] as? Double {
+                completion(String(format: "%.0f", currentMatchScore))  // Convert Double to String, rounding off if needed
+            } else {
+                completion("N/A")  // Fallback if not found
+            }
+        } else {
+            print("Error fetching currentMatchScore: \(String(describing: error))")
+            completion(nil)
+        }
+    }
+}
+
+func handleDeletedMatch(for userUID: String, completion: @escaping (Bool, String?, String?) -> Void) {
+    let db = Firestore.firestore()
+    let userRef = db.collection("users").document(userUID)
+
+    // Fetch the current user's document to check for currentMatchUID
+    userRef.getDocument { (document, error) in
+        if let document = document, document.exists {
+            // Retrieve the currentMatchUID
+            if let currentMatchUID = document.data()?["currentMatchUID"] as? String {
+                
+                // Check if the match still exists
+                let matchRef = db.collection("users").document(currentMatchUID)
+                matchRef.getDocument { (matchDoc, matchError) in
+                    if let matchDoc = matchDoc, matchDoc.exists {
+                        // The match still exists, return success and current match info
+                        completion(true, nil, nil)
+                    } else {
+                        // The match has been deleted, update the current user's document
+                        print("Match with UID \(currentMatchUID) not found, updating user \(userUID).")
+
+                        userRef.updateData([
+                            "isPaired": false,
+                            "currentMatchUID": FieldValue.delete(),
+                            "currentMatchScore": FieldValue.delete()
+                        ]) { error in
+                            if let error = error {
+                                print("Error updating user after match deletion: \(error)")
+                                completion(false, nil, nil)
+                            } else {
+                                // Send back the update that match is deleted and should clear fields
+                                print("User \(userUID) updated after match deletion.")
+                                completion(false, nil, nil)
+                            }
+                        }
+                    }
+                }
+            } else {
+                // No current match, no action required
+                completion(true, nil, nil)
+            }
+        } else {
+            print("Error fetching user document: \(String(describing: error))")
+            completion(false, nil, nil)
+        }
+    }
+}
+
+
 
 // Structure to hold match data
 struct Match {
