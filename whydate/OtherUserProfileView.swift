@@ -6,6 +6,7 @@ class OtherUserProfileViewModel: ObservableObject {
     @Published var photos: [String] = Array(repeating: "", count: 4)
     @Published var firstName: String = "{username}"
     @Published var height: String = "N/A"
+    @Published var year: String = "N/A"
     @Published var hometown: String = "N/A"
     @Published var age: String = "N/A"
     @Published var astrologicalSign: String = "N/A"
@@ -24,6 +25,7 @@ class OtherUserProfileViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.firstName = data["firstName"] as? String ?? "{username}"
                     self.height = data["height"] as? String ?? "N/A"
+                    self.year = data["year"] as? String ?? "N/A"
                     self.hometown = data["hometown"] as? String ?? "N/A"
                     self.age = data["age"] as? String ?? "N/A"
                     self.astrologicalSign = data["astrologicalSign"] as? String ?? "N/A"
@@ -109,7 +111,8 @@ struct OtherUserProfileView: View {
             LargeInfoBoxViewing(
                 university: viewModel.schoolName,
                 major: viewModel.major,
-                location: viewModel.hometown
+                location: viewModel.hometown,
+                year: viewModel.year
             )
             .padding(.horizontal, 20)
 
@@ -142,6 +145,7 @@ struct LargeInfoBoxViewing: View {
     var university: String
     var major: String
     var location: String
+    var year: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -156,6 +160,13 @@ struct LargeInfoBoxViewing: View {
                 Image(systemName: "graduationcap.fill")
                     .foregroundColor(.black)
                 Text(major)
+                    .foregroundColor(.black)
+                    .font(.headline)
+            }
+            HStack {
+                Image(systemName: "graduationcap.fill")
+                    .foregroundColor(.black)
+                Text(year)
                     .foregroundColor(.black)
                     .font(.headline)
             }

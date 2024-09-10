@@ -10,6 +10,7 @@ class UserProfileViewModel: ObservableObject {
     @Published var age: String = "N/A"
     @Published var astrologicalSign: String = "N/A"
     @Published var major: String = "N/A"
+    @Published var year: String = "N/A"
     @Published var school: String = "N/A"
     @Published var schoolName: String = "N/A"
     @Published var profileReveals: Int = 0
@@ -66,6 +67,19 @@ class UserProfileViewModel: ObservableObject {
                     self.major = newMajor
                 }
                 print("Successfully saved major")
+            }
+        }
+    }
+    
+    func saveYear(uid: String, newYear: String) {
+        Firestore.firestore().collection("users").document(uid).updateData(["year": newYear]) { error in
+            if let error = error {
+                print("Failed to save year: \(error.localizedDescription)")
+            } else {
+                DispatchQueue.main.async {
+                    self.year = newYear
+                }
+                print("Successfully saved year")
             }
         }
     }
@@ -251,6 +265,7 @@ struct ProfileView: View {
     @State private var isEditingHeight = false
     @State private var isEditingMajor = false
     @State private var isEditingHometown = false
+    @State private var isEditingYear = false
     @State private var showQuestionnaire = false
     
     
@@ -307,11 +322,15 @@ struct ProfileView: View {
                 university: viewModel.schoolName,
                 major: viewModel.major,
                 location: viewModel.hometown,
+                year: viewModel.year,
                 onEditMajor: {
                     isEditingMajor = true
                 },
                 onEditHometown: {
                     isEditingHometown = true
+                },
+                onEditYear: {
+                    isEditingYear = true
                 }
             )
             .padding(.horizontal, 20) // Optional padding for better alignment
@@ -359,6 +378,9 @@ struct ProfileView: View {
         .sheet(isPresented: $isEditingHometown) {
             EditHometownView(hometown: $viewModel.hometown, viewModel: viewModel, uid: uid)
         }
+        .sheet(isPresented: $isEditingYear) {
+            EditYearView(year: $viewModel.year, viewModel: viewModel, uid: uid)
+        }
         .sheet(isPresented: $showQuestionnaire) {
             QuestionnaireView(uid: uid, hasCompletedQuestionnaire: $viewModel.hasCompletedQuestionnaire)
         }
@@ -391,9 +413,13 @@ struct LargeInfoBox: View {
     var university: String
     var major: String
     var location: String
+    var year: String
     
+
     var onEditMajor: () -> Void
     var onEditHometown: () -> Void
+    var onEditYear: () -> Void
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -412,6 +438,16 @@ struct LargeInfoBox: View {
                     .font(.headline)
                     .onTapGesture {
                         onEditMajor()
+                    }
+            }
+            HStack {
+                Image(systemName: "graduationcap.fill")
+                    .foregroundColor(.black)
+                Text(year)
+                    .foregroundColor(.black)
+                    .font(.headline)
+                    .onTapGesture {
+                        onEditYear()
                     }
             }
             HStack {
@@ -466,6 +502,37 @@ struct EditHeightView: View {
             
             Button("Save") {
                 viewModel.saveHeight(uid: uid, newHeight: height)
+                presentationMode.wrappedValue.dismiss()
+            }
+            .padding()
+        }
+        .padding()
+    }
+}
+
+struct EditYearView: View {
+    @Binding var year: String
+    @Environment(\.presentationMode) var presentationMode
+    let viewModel: UserProfileViewModel
+    let uid: String
+    
+    let years = ["Freshmen","Sophomore", "Junior", "Senior"]
+    
+    var body: some View {
+        VStack {
+            Text("Edit Year")
+                .font(.headline)
+            
+            Picker("Select Year", selection: $year) {
+                ForEach(years, id: \.self) { year in
+                    Text(year).tag(year)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            .frame(height: 150)
+            
+            Button("Save") {
+                viewModel.saveYear(uid: uid, newYear: year)
                 presentationMode.wrappedValue.dismiss()
             }
             .padding()

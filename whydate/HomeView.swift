@@ -9,6 +9,7 @@ struct HomeView: View {
     @StateObject private var viewModel = UserProfileViewModel()
     @State private var selectedTab = 0
     @State private var numberOfMatches: Int = 0
+    @State private var currentMatchScore: String? = nil
     @State private var bestMatch: Match? = nil
     @State private var isProfileRevealed: Bool = false  // Track profile reveal status
     @State private var isPaired: Bool? = nil
@@ -81,7 +82,7 @@ struct HomeView: View {
         NavigationStack {
             VStack(spacing: 20) {
                 HStack {
-                    Text("Hi \(viewModel.firstName)")
+                    Text("Hi \(viewModel.firstName)!")
                         .font(.largeTitle)
                         .bold()
                         .padding()
@@ -111,8 +112,11 @@ struct HomeView: View {
                             Text("You were paired with \(currentMatchFirstName)")
                                 .font(.headline)
                         } else {
-                            Text("Working on finding the match!")
+                            Text("Working on finding the match name!")
                                 .font(.headline)
+                        }
+                        if let currentMatchScore = currentMatchScore {
+                            Text("Score:  \(currentMatchScore)")
                         }
                     } else {
                         Text("Working on finding your match!")
@@ -130,39 +134,39 @@ struct HomeView: View {
             }
             .onAppear{
                 if let uid = uid {
-                    // Call findMatches to calculate matches and update Firestore
-                    findBestMatch(for: uid) { match in
-                        self.bestMatch = match
-                        if let matchUID = match?.uid {
-                            // Fetch profile reveal status from Firestore
-                            fetchProfileRevealStatus(for: matchUID) { revealed in
-                                self.isProfileRevealed = revealed
+                    handleDeletedMatch(for: uid) { success, firstName, score in
+                        if success {
+                            
+                            // Call findBestMatchAndPair and handle the completion
+                            findBestMatchAndPair(for: uid) { pairedMatch in
+                                if let match = pairedMatch {
+                                    // Update UI or state based on the paired match
+                                    self.bestMatch = match
+                                    print("Successfully paired with match: \(match.uid)")
+                                } else {
+                                    print("No available match to pair with.")
+                                }
                             }
-                        }
-                    }
-                    
-                    // Call findBestMatchAndPair and handle the completion
-                    findBestMatchAndPair(for: uid) { pairedMatch in
-                        if let match = pairedMatch {
-                            // Update UI or state based on the paired match
-                            self.bestMatch = match
-                            print("Successfully paired with match: \(match.uid)")
+                            
+                            // Proceed with fetching match details if the match still exists
+                            fetchIsPaired(for: uid) { paired in
+                                self.isPaired = paired  // Update the state
+                                if paired {
+                                    fetchCurrentMatchFirstName(for: uid) { firstName in
+                                        self.currentMatchFirstName = firstName
+                                    }
+                                    fetchCurrentMatchScore(for: uid) { score in
+                                        self.currentMatchScore = score
+                                    }
+                                }
+                            }
                         } else {
-                            print("No available match to pair with.")
+                            // If the match was deleted, reset the state
+                            self.isPaired = false
+                            self.currentMatchFirstName = nil
+                            self.currentMatchScore = nil
                         }
                     }
-                    
-                    // Fetch the user's pairing status
-                    fetchIsPaired(for: uid) { paired in
-                        self.isPaired = paired  // Update the state
-                        if paired {
-                            // If paired, fetch and update the current match's first name
-                            fetchCurrentMatchFirstName(for: uid) { firstName in
-                                self.currentMatchFirstName = firstName  // Update the state
-                            }
-                        }
-                    }
-                    
                 }
             }
             .navigationBarHidden(true)
