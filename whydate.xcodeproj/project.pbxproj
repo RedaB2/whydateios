@@ -16,6 +16,11 @@
 		156C74762C8976CB0050B7AD /* OtherUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156C74752C8976CB0050B7AD /* OtherUserProfileView.swift */; };
 		156E8B1A2C8FE774004CBE9D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A4212C6EF85F0069FFE1 /* GoogleService-Info.plist */; };
 		156E8B1E2C8FE7BE004CBE9D /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B1C2C8FE7A9004CBE9D /* Comfortaa-Regular.ttf */; };
+		156E8B252C91212D004CBE9D /* .eslintrc.js in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B1F2C91212D004CBE9D /* .eslintrc.js */; };
+		156E8B262C91212D004CBE9D /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B202C91212D004CBE9D /* .gitignore */; };
+		156E8B272C91212D004CBE9D /* index.js in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B212C91212D004CBE9D /* index.js */; };
+		156E8B282C91212D004CBE9D /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B222C91212D004CBE9D /* package.json */; };
+		156E8B292C91212D004CBE9D /* firebase.json in Resources */ = {isa = PBXBuildFile; fileRef = 156E8B242C91212D004CBE9D /* firebase.json */; };
 		15C5A3EC2C6DC8600069FFE1 /* whydateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */; };
 		15C5A3F02C6DC8610069FFE1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A3EF2C6DC8610069FFE1 /* Assets.xcassets */; };
 		15C5A3F32C6DC8610069FFE1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15C5A3F22C6DC8610069FFE1 /* Preview Assets.xcassets */; };
@@ -83,6 +88,11 @@
 		156C74712C8965660050B7AD /* MessagingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagingView.swift; sourceTree = "<group>"; };
 		156C74752C8976CB0050B7AD /* OtherUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherUserProfileView.swift; sourceTree = "<group>"; };
 		156E8B1C2C8FE7A9004CBE9D /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Comfortaa-Regular.ttf"; sourceTree = "<group>"; };
+		156E8B1F2C91212D004CBE9D /* .eslintrc.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = .eslintrc.js; sourceTree = "<group>"; };
+		156E8B202C91212D004CBE9D /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		156E8B212C91212D004CBE9D /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
+		156E8B222C91212D004CBE9D /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
+		156E8B242C91212D004CBE9D /* firebase.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = firebase.json; sourceTree = "<group>"; };
 		15C5A3E82C6DC8600069FFE1 /* whydate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whydate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = whydateApp.swift; sourceTree = "<group>"; };
 		15C5A3EF2C6DC8610069FFE1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -159,9 +169,22 @@
 			path = ProjectFonts;
 			sourceTree = "<group>";
 		};
+		156E8B232C91212D004CBE9D /* functions */ = {
+			isa = PBXGroup;
+			children = (
+				156E8B1F2C91212D004CBE9D /* .eslintrc.js */,
+				156E8B202C91212D004CBE9D /* .gitignore */,
+				156E8B212C91212D004CBE9D /* index.js */,
+				156E8B222C91212D004CBE9D /* package.json */,
+			);
+			path = functions;
+			sourceTree = "<group>";
+		};
 		15C5A3DF2C6DC8600069FFE1 = {
 			isa = PBXGroup;
 			children = (
+				156E8B242C91212D004CBE9D /* firebase.json */,
+				156E8B232C91212D004CBE9D /* functions */,
 				15C5A3EA2C6DC8600069FFE1 /* whydate */,
 				15C5A3FB2C6DC8610069FFE1 /* whydateTests */,
 				15C5A4052C6DC8610069FFE1 /* whydateUITests */,
@@ -364,10 +387,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				156E8B282C91212D004CBE9D /* package.json in Resources */,
 				156E8B1E2C8FE7BE004CBE9D /* Comfortaa-Regular.ttf in Resources */,
 				156E8B1A2C8FE774004CBE9D /* GoogleService-Info.plist in Resources */,
 				15C5A3F32C6DC8610069FFE1 /* Preview Assets.xcassets in Resources */,
+				156E8B252C91212D004CBE9D /* .eslintrc.js in Resources */,
+				156E8B272C91212D004CBE9D /* index.js in Resources */,
+				156E8B262C91212D004CBE9D /* .gitignore in Resources */,
 				15C5A3F02C6DC8610069FFE1 /* Assets.xcassets in Resources */,
+				156E8B292C91212D004CBE9D /* firebase.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

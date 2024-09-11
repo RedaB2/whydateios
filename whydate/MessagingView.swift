@@ -1,10 +1,10 @@
 import SwiftUI
 import FirebaseFirestore
 
-// Message model
 struct Message: Codable, Identifiable {
     @DocumentID var id: String?
     var senderUID: String
+    var recipientUID: String // Add recipient UID
     var messageText: String
     var timestamp: Date
 }
@@ -112,7 +112,15 @@ struct ChatView: View {
 
         let db = Firestore.firestore()
         let conversationID = generateConversationID(userUID: userUID, matchUID: matchUID)
-        let newMessage = Message(id: UUID().uuidString, senderUID: userUID, messageText: trimmedMessageText, timestamp: Date())
+        
+        // Create the new message with the recipientUID
+        let newMessage = Message(
+            id: UUID().uuidString,
+            senderUID: userUID,
+            recipientUID: matchUID,  // Include the recipient UID
+            messageText: trimmedMessageText,
+            timestamp: Date()
+        )
 
         do {
             try db.collection("conversations")
