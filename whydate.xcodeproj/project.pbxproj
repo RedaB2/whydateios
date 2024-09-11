@@ -93,6 +93,7 @@
 		156E8B212C91212D004CBE9D /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
 		156E8B222C91212D004CBE9D /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
 		156E8B242C91212D004CBE9D /* firebase.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = firebase.json; sourceTree = "<group>"; };
+		156E8B2A2C9135F7004CBE9D /* whydate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = whydate.entitlements; sourceTree = "<group>"; };
 		15C5A3E82C6DC8600069FFE1 /* whydate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = whydate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = whydateApp.swift; sourceTree = "<group>"; };
 		15C5A3EF2C6DC8610069FFE1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -205,6 +206,7 @@
 		15C5A3EA2C6DC8600069FFE1 /* whydate */ = {
 			isa = PBXGroup;
 			children = (
+				156E8B2A2C9135F7004CBE9D /* whydate.entitlements */,
 				152ECCB02C714B4900BA270B /* Info.plist */,
 				152ECCAB2C714A4500BA270B /* ProjectFonts */,
 				15C5A3EB2C6DC8600069FFE1 /* whydateApp.swift */,
@@ -597,6 +599,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = whydate/whydate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"whydate/Preview Content\"";
@@ -627,6 +630,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = whydate/whydate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"whydate/Preview Content\"";
