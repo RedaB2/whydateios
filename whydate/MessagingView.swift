@@ -24,7 +24,7 @@ struct MessageView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
             } else {
-                Text(message.messageText) 
+                Text(message.messageText)
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .foregroundColor(.black)

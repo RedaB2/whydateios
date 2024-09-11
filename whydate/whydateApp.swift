@@ -47,13 +47,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if #available(iOS 14.0, *) {
-            // For iOS 14 and above, use .banner or .list
-            completionHandler([.banner, .badge, .sound])
-        } else {
-            // Fallback for earlier iOS versions
-            completionHandler([.alert, .badge, .sound])
-        }
+        // If the app is in the foreground, do not show notifications
+        completionHandler([])  // Empty array to suppress all notifications
     }
     
     // Handle background notification tap
