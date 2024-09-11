@@ -1,38 +1,41 @@
-const functions = require("firebase-functions");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 admin.initializeApp();
+const db = admin.firestore();
+const messaging = admin.messaging();
 
-// Function to send notifications when a new message is sent
-exports.sendNotificationOnNewMessage = functions.firestore
-    .document("conversations/{conversationId}/messages/{messageId}")
-    .onCreate(async (snap, context) => {
-      const newMessage = snap.data();
+exports.sendNotificationOnNewMessage = onDocumentCreated(
+    "conversations/{conversationId}/messages/{messageId}",
+    async (event) => {
+      const newMessage = event.data.data(); // Ensure this line is correct
       const recipientUID = newMessage.recipientUID;
 
       try {
-      // Fetch the recipient's FCM token from Firestore
-        const userDoc = await admin
-            .firestore()
-            .collection("users")
-            .doc(recipientUID)
-            .get();
-        const fcmToken = userDoc.data().fcmToken;
+        const userDoc = await db.collection("users").doc(recipientUID).get();
+        const userData = userDoc.data();
+        const fcmToken = userData && userData.fcmToken;
 
-        const payload = {
+        if (!fcmToken) {
+          console.log("No FCM token for user");
+          return;
+        }
+
+        const message = {
+          token: fcmToken,
           notification: {
-            title: "New Message",
-            body: `${newMessage.messageText}`,
-            sound: "default",
+            title: "Your match just texted you!",
+            body: newMessage.messageText,
+          },
+          data: {
+            conversationId: event.params.conversationId,
+            senderId: newMessage.senderUID,
           },
         };
 
-        if (fcmToken) {
-          await admin.messaging().sendToDevice(fcmToken, payload);
-          console.log("Notification sent successfully");
-        } else {
-          console.log("No FCM token for user");
-        }
+        await messaging.send(message);
+        console.log("Notification sent successfully");
       } catch (error) {
-        console.log("Error sending notification:", error);
+        console.error("Error sending notification:", error);
       }
-    });
+    },
+);
