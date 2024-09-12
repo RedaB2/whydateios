@@ -95,6 +95,7 @@ struct whydateApp: App {
                 .onAppear {
                     checkLoginStatus()
                 }
+                .preferredColorScheme(.light)
         }
     }
     
