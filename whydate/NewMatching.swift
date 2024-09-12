@@ -181,7 +181,7 @@ func findMatches(for userUID: String, completion: @escaping ([Match]) -> Void) {
 func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) -> Void) {
     let db = Firestore.firestore()
 
-    // Fetch the user's matched data (UIDs + scores) from Firestore
+    // Fetch the user's matched data (UIDs + scores) and previous matches from Firestore
     let userRef = db.collection("users").document(userUID)
     userRef.getDocument { document, error in
         guard let document = document, document.exists else {
@@ -190,6 +190,9 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
             return
         }
 
+        // Get the user's previous matches
+        let previousMatches = document.data()?["previousMatches"] as? [String] ?? []
+        
         // Get the gender of the current user
         guard let userGender = document.data()?["gender"] as? String else {
             print("User gender not found")
@@ -210,6 +213,11 @@ func findBestMatchAndPair(for userUID: String, completion: @escaping (Match?) ->
             let dispatchGroup = DispatchGroup()
 
             for (matchUID, score) in matchedData {
+                if previousMatches.contains(matchUID) {
+                    print("Skipped \(matchUID), it is a previous match!")
+                    continue
+                }
+
                 dispatchGroup.enter()
 
                 // Fetch match user data
@@ -276,18 +284,22 @@ func pairUsers(userUID: String, matchUID: String, score: Int, completion: @escap
 
     let batch = db.batch()
     
+    // Update user document
     batch.updateData([
         "isPaired": true,
         "currentMatchUID": matchUID,
         "currentMatchScore": score,  // Store the score of the match
-        "isProfileRevealed": false
+        "isProfileRevealed": false,
+        "previousMatches": FieldValue.arrayUnion([matchUID])  // Add the matchUID to the previousMatches array
     ], forDocument: userRef)
 
+    // Update match document
     batch.updateData([
         "isPaired": true,
         "currentMatchUID": userUID,
         "currentMatchScore": score,  // Store the score of the match
-        "isProfileRevealed": false
+        "isProfileRevealed": false,
+        "previousMatches": FieldValue.arrayUnion([userUID])  // Add the userUID to the previousMatches array
     ], forDocument: matchRef)
 
     batch.commit { error in
