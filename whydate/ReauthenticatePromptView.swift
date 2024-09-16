@@ -8,7 +8,7 @@ struct ReauthenticatePromptView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Re-authenticate")
+            Text("Secure Verification")
                 .font(.headline)
             
             SecureField("Enter your password", text: $password)
