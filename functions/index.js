@@ -7,7 +7,7 @@ const messaging = admin.messaging();
 exports.sendNotificationOnNewMessage = onDocumentCreated(
     "conversations/{conversationId}/messages/{messageId}",
     async (event) => {
-      const newMessage = event.data.data(); // Ensure this line is correct
+      const newMessage = event.data.data(); 
       const recipientUID = newMessage.recipientUID;
 
       try {
